@@ -41,8 +41,10 @@
   <PropertyGroup>
     <ApplicationIcon>Diablo III_9996.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
   <PropertyGroup>
-    <NoWin32Manifest>true</NoWin32Manifest>
+    <ApplicationManifest>D3_Thud.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -63,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="D3_Thud.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Diablo III_9996.ico" />

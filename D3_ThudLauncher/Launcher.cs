@@ -3,26 +3,49 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading;
 
 namespace D3_ThudLauncher
 {
     internal class Launcher
     {
+        // ReSharper disable once AssignNullToNotNullAttribute
+        private static bool IsElevated => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
         private static void Main(string[] args)
         {
+            if(!IsElevated)throw new PrivilegeNotHeldException("You must run this as Admin");
             //Default path for my PC + allow anyone to cmd the sh!t out of these
             //Param 1 = THUD Path (including exe)
             //Param 2 = D3 Path (including exe)
+            //Param 3 = User name to run Diablo
+            //Param 4 = Password for the user that'll run Diablo
             var thudPath = args.Length > 0 ? args[0] : @"D:\THUD\THUD.exe";
             var d3Path = args.Length > 1 ? args[1] : @"C:\Program Files\Diablo III\Diablo III.exe";
+            var spwD3 = new SecureString();
+            var pw = args.Length > 3 ? args[3] : "diablo";
+            foreach (var c in pw)
+            {
+                spwD3.AppendChar(c);
+            }
+
+            var d3StartInfo = new ProcessStartInfo
+            {
+                UserName = args.Length > 2 ? args[2] : "diablo",
+                Password = spwD3,
+                FileName = d3Path,
+                UseShellExecute = false,
+                LoadUserProfile = true
+            };
 
             //Make sure we won't try to launch something that does not exists
             if (!File.Exists(thudPath)) throw new FileNotFoundException(thudPath);
             if(!File.Exists(d3Path)) throw new FileNotFoundException(d3Path);
 
             //Starts Battle.Net
-            var bnetHandle = StartBNet(d3Path);
+            var bnetHandle = StartBNet(d3StartInfo);
             //Starts Diablo 3 from Battle.Net (click at X,Y position on standard windows size)
             StartDiablo(bnetHandle);
             //Stops Battle.Net from being an arse
@@ -38,9 +61,9 @@ namespace D3_ThudLauncher
             Process.Start(thudPath);
         }
 
-        private static IntPtr StartBNet(string d3Path)
+        private static IntPtr StartBNet(ProcessStartInfo d3StartInfo)
         {
-            Process.Start(d3Path);
+            Process.Start(d3StartInfo);
             return BringToFront("Battle.net");
         }
 
@@ -49,7 +72,7 @@ namespace D3_ThudLauncher
             //Makes sure D3 starts
             while (Process.GetProcessesByName("Diablo III").Length < 1)
             {
-                //Click at coords 290, 677 relatively to the Window's position
+                //Click Play at coords 290, 677 relatively to the Window's position
                 ClickOnPointTool.ClickOnPoint(handle, new Point(290, 677));
                 //Avoid overusing the CPU if we have to click alot
                 Thread.Sleep(1000);
