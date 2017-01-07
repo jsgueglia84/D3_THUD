@@ -13,6 +13,8 @@ This simple tool starts Diablo III and TurboHUD at once.
 You **must** have created a new user and denied its access to your TurboHUD folder (See [TurboHUD's forum](http://turbohud.freeforums.net/thread/2980/protect-warden))
 
 0. Open the project in Visual Studio and compile it, or use the compîled version found [here](https://github.com/yonguelink/D3_THUD/blob/master/D3_ThudLauncher.exe)
+0. Create a new user in Windows that does NOT have admin privileges, and is locked from accessing TurboHUD's folder
+	*. Execute Diablo's launcher and in the settings make sure the game will be launched in 32 bit (as TurboHUD doesn't support 64 bit, and might never)
 0. The executable takes four arguments:
 	0. TurboHUD complete path (by default : D:\THUD\THUD.exe)
 	0. Diablo III complete path (by default: C:\Program File\Diablo III\Diablo III.exe)

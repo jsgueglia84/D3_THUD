@@ -91,7 +91,7 @@ namespace D3_ThudLauncher
                 //Click Play at coords 290, 677 relatively to the Window's position
                 ClickOnPointTool.ClickOnPoint(handle, new Point(290, 677));
                 //Avoid overusing the CPU if we have to click alot
-                Thread.Sleep(1000);
+                Thread.Sleep(4000);
             }
         }
 
