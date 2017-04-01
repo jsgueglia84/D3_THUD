@@ -80,7 +80,7 @@ namespace D3_ThudLauncher
         private static IntPtr StartBNet(ProcessStartInfo d3StartInfo)
         {
             Process.Start(d3StartInfo);
-            return BringToFront("Battle.net");
+            return BringToFront("Blizzard App");
         }
 
         private static void StartDiablo(IntPtr handle)
@@ -98,7 +98,7 @@ namespace D3_ThudLauncher
         private static void KillBNet()
         {
             //Get Battle.net process
-            var bnetProcess = Process.GetProcessesByName("Battle.net")[0];
+            var bnetProcess = Process.GetProcessesByName("Blizzard App")[0];
             //Kill it
             bnetProcess.Kill();
         }
