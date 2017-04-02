@@ -62,7 +62,7 @@ namespace D3_ThudLauncher
         private static void StartThud(string thudPath)
         {
             //Give 5 second to start D3, even if it takes more like 10
-            Thread.Sleep(5000);
+            Thread.Sleep(10000);
             var workingDirectory = new FileInfo(thudPath).DirectoryName;
             if (workingDirectory == null) return;
 
