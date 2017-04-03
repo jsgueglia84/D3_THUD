@@ -62,7 +62,7 @@ namespace D3_ThudLauncher
         private static void StartThud(string thudPath)
         {
             //Give 5 second to start D3, even if it takes more like 10
-            Thread.Sleep(10000);
+            Thread.Sleep(5000);
             var workingDirectory = new FileInfo(thudPath).DirectoryName;
             if (workingDirectory == null) return;
 
@@ -98,7 +98,9 @@ namespace D3_ThudLauncher
         private static void KillBNet()
         {
             //Get Battle.net process
-            var bnetProcess = Process.GetProcessesByName("Blizzard App")[0];
+            var bnetProcesses = Process.GetProcessesByName("Blizzard App");
+            if (bnetProcesses.Length <= 0) return;
+            var bnetProcess = bnetProcesses[0];
             //Kill it
             bnetProcess.Kill();
         }
