@@ -10,7 +10,7 @@ This simple tool starts Diablo III and TurboHUD at once.
 
 ## How to use it?
 
-You **must** have created a new user and denied its access to your TurboHUD folder (See [TurboHUD's forum](http://turbohud.freeforums.net/thread/2980/protect-warden))
+You **must** have created a new user and denied its access to your TurboHUD folder (See [TurboHUD's forum](http://www.ownedcore.com/forums/diablo-3/turbohud/turbohud-support/612776-how-protect-against-warden.html))
 
 0. Open the project in Visual Studio and compile it, or use the compîled version found [here](https://github.com/yonguelink/D3_THUD/blob/master/D3_ThudLauncher.exe)
 0. Create a new user in Windows that does NOT have admin privileges, and is locked from accessing TurboHUD's folder
