@@ -11,14 +11,16 @@ using System.Windows.Forms;
 
 namespace D3_ThudLauncher
 {
-    internal class Launcher
+    internal static class Launcher
     {
         private const string BNet = "Blizzard Battle.net";
+        private const string BNetKillProcess = "Battle.net";
         private const string D3ProcessName = "Diablo III64";
         private const string DefaultThudPath = @"D:\THUD\THUD.exe";
         private const string DefaultD3Path = @"D:\Program Files (x86)\Diablo III\Diablo III.exe";
         private const string DefaultAccountPw = "diablo";
-        private const int Limit = 5;
+        private const string defaultAccountName = "diablo";
+        private const int Limit = 10;
         
         // ReSharper disable once AssignNullToNotNullAttribute
         private static bool IsElevated => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
@@ -42,30 +44,27 @@ namespace D3_ThudLauncher
                 }
 
                 var workingDirectory = new FileInfo(d3Path).DirectoryName;
-                if (workingDirectory != null)
+                if (workingDirectory == null) throw new FileNotFoundException(d3Path);
+                var d3StartInfo = new ProcessStartInfo
                 {
-                    var d3StartInfo = new ProcessStartInfo
-                    {
-                        UserName = args.Length > 2 ? args[2] : "diablo",
-                        Password = spwD3,
-                        FileName = d3Path,
-                        WorkingDirectory = workingDirectory,
-                        UseShellExecute = false,
-                        LoadUserProfile = true
-                    };
+                    UserName = args.Length > 2 ? args[2] : defaultAccountName,
+                    Password = spwD3,
+                    FileName = d3Path,
+                    WorkingDirectory = workingDirectory,
+                    UseShellExecute = false,
+                    LoadUserProfile = true
+                };
 
-                    //Make sure we won't try to launch something that does not exists
-                    if (!File.Exists(thudPath)) throw new FileNotFoundException(thudPath);
-                    if (!File.Exists(d3Path)) throw new FileNotFoundException(d3Path);
+                //Make sure we won't try to launch something that does not exists
+                if (!File.Exists(thudPath)) throw new FileNotFoundException(thudPath);
+                if (!File.Exists(d3Path)) throw new FileNotFoundException(d3Path);
 
-                    //Starts Battle.Net
-                    var bnetHandle = StartBNet(d3StartInfo);
-                    //Starts Diablo 3 from Battle.Net (click at X,Y position on standard windows size)
-                    StartDiablo(bnetHandle);
-                }
-
+                //Starts Battle.Net
+                var bnetHandle = StartBNet(d3StartInfo);
+                //Starts Diablo 3 from Battle.Net (click at X,Y position on standard windows size)
+                StartDiablo(bnetHandle);
                 //Stops Battle.Net from being an arse
-                KillBNet();
+                KillProcess(BNetKillProcess);
                 //Starts THUD
                 StartThud(thudPath);
             }
@@ -80,7 +79,7 @@ namespace D3_ThudLauncher
             //Give 5 second to start D3, even if it takes more like 10
             Thread.Sleep(5000);
             var workingDirectory = new FileInfo(thudPath).DirectoryName;
-            if (workingDirectory == null) return;
+            if (workingDirectory == null) throw new FileNotFoundException(thudPath);
 
             var thudStartInfo = new ProcessStartInfo
             {
@@ -114,11 +113,11 @@ namespace D3_ThudLauncher
             }
         }
 
-        private static void KillBNet()
+        private static void KillProcess(string processName)
         {
             //Get Battle.net process
-            var bnetProcesses = Process.GetProcessesByName(BNet);
-            if (bnetProcesses.Length <= 0) throw new FileNotFoundException(BNet);
+            var bnetProcesses = Process.GetProcessesByName(processName);
+            if (bnetProcesses.Length <= 0) throw new FileNotFoundException(processName);
             var bnetProcess = bnetProcesses[0];
             //Kill it
             bnetProcess.Kill();
@@ -153,8 +152,8 @@ namespace D3_ThudLauncher
         }
 
         [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("USER32.DLL")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
     }
 }
