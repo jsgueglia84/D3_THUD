@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -80,13 +80,13 @@ namespace D3_ThudLauncher
         private static IntPtr StartBNet(ProcessStartInfo d3StartInfo)
         {
             Process.Start(d3StartInfo);
-            return BringToFront("Blizzard App");
+            return BringToFront("Blizzard Battle.net");
         }
 
         private static void StartDiablo(IntPtr handle)
         {
             //Makes sure D3 starts
-            while (Process.GetProcessesByName("Diablo III").Length < 1)
+            while (Process.GetProcessesByName("Diablo III64").Length < 1)
             {
                 //Click Play at coords 290, 677 relatively to the Window's position
                 ClickOnPointTool.ClickOnPoint(handle, new Point(290, 677));
@@ -98,7 +98,7 @@ namespace D3_ThudLauncher
         private static void KillBNet()
         {
             //Get Battle.net process
-            var bnetProcesses = Process.GetProcessesByName("Blizzard App");
+            var bnetProcesses = Process.GetProcessesByName("Blizzard Battle.net");
             if (bnetProcesses.Length <= 0) return;
             var bnetProcess = bnetProcesses[0];
             //Kill it
