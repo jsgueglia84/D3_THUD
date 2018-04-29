@@ -19,7 +19,7 @@ namespace D3_ThudLauncher
         private const string DefaultThudPath = @"D:\THUD\THUD.exe";
         private const string DefaultD3Path = @"D:\Program Files (x86)\Diablo III\Diablo III.exe";
         private const string DefaultAccountPw = "diablo";
-        private const string defaultAccountName = "diablo";
+        private const string DefaultAccountName = "diablo";
         private const int Limit = 10;
         
         // ReSharper disable once AssignNullToNotNullAttribute
@@ -47,7 +47,7 @@ namespace D3_ThudLauncher
                 if (workingDirectory == null) throw new FileNotFoundException(d3Path);
                 var d3StartInfo = new ProcessStartInfo
                 {
-                    UserName = args.Length > 2 ? args[2] : defaultAccountName,
+                    UserName = args.Length > 2 ? args[2] : DefaultAccountName,
                     Password = spwD3,
                     FileName = d3Path,
                     WorkingDirectory = workingDirectory,
