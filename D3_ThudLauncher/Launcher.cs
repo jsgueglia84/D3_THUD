@@ -13,6 +13,13 @@ namespace D3_ThudLauncher
 {
     internal class Launcher
     {
+        private const string BNet = "Blizzard Battle.net";
+        private const string D3ProcessName = "Diablo III64";
+        private const string DefaultThudPath = @"D:\THUD\THUD.exe";
+        private const string DefaultD3Path = @"D:\Program Files (x86)\Diablo III\Diablo III.exe";
+        private const string DefaultAccountPw = "diablo";
+        private const int Limit = 5;
+        
         // ReSharper disable once AssignNullToNotNullAttribute
         private static bool IsElevated => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
         private static void Main(string[] args)
@@ -25,10 +32,10 @@ namespace D3_ThudLauncher
                 //Param 2 = D3 Path (including exe)
                 //Param 3 = User name to run Diablo
                 //Param 4 = Password for the user that'll run Diablo
-                var thudPath = args.Length > 0 ? args[0] : @"D:\THUD\THUD.exe";
-                var d3Path = args.Length > 1 ? args[1] : @"D:\Program Files (x86)\Diablo III\Diablo III.exe";
+                var thudPath = args.Length > 0 ? args[0] : DefaultThudPath;
+                var d3Path = args.Length > 1 ? args[1] : DefaultD3Path;
+                var pw = args.Length > 3 ? args[3] : DefaultAccountPw;
                 var spwD3 = new SecureString();
-                var pw = args.Length > 3 ? args[3] : "diablo";
                 foreach (var c in pw)
                 {
                     spwD3.AppendChar(c);
@@ -89,26 +96,29 @@ namespace D3_ThudLauncher
         private static IntPtr StartBNet(ProcessStartInfo d3StartInfo)
         {
             Process.Start(d3StartInfo);
-            return BringToFront("Blizzard App");
+            return BringToFront(BNet);
         }
 
         private static void StartDiablo(IntPtr handle)
         {
+            var tries = 0;
             //Makes sure D3 starts
-            while (Process.GetProcessesByName("Diablo III").Length < 1)
+            while (Process.GetProcessesByName(D3ProcessName).Length < 1)
             {
                 //Click Play at coords 290, 677 relatively to the Window's position
                 ClickOnPointTool.ClickOnPoint(handle, new Point(290, 677));
                 //Avoid overusing the CPU if we have to click alot
                 Thread.Sleep(4000);
+                ++tries;
+                if (tries > Limit) throw new FileNotFoundException(D3ProcessName);
             }
         }
 
         private static void KillBNet()
         {
             //Get Battle.net process
-            var bnetProcesses = Process.GetProcessesByName("Blizzard App");
-            if (bnetProcesses.Length <= 0) return;
+            var bnetProcesses = Process.GetProcessesByName(BNet);
+            if (bnetProcesses.Length <= 0) throw new FileNotFoundException(BNet);
             var bnetProcess = bnetProcesses[0];
             //Kill it
             bnetProcess.Kill();
@@ -120,10 +130,11 @@ namespace D3_ThudLauncher
             throw e;
         }
 
-        public static IntPtr BringToFront(string title)
+        private static IntPtr BringToFront(string title)
         {
             // Get a handle to the Calculator application.
             var handle = FindWindow(null, title);
+            var tries = 0;
 
             //Wait until the app starts and can be shown
             while (handle == IntPtr.Zero)
@@ -132,9 +143,10 @@ namespace D3_ThudLauncher
                 Thread.Sleep(1000);
                 //Reset the handle
                 handle = FindWindow(null, title);
+                ++tries;
+                if (tries > Limit) throw new FileNotFoundException(title);
             }
             
-
             // Make Calculator the foreground application
             SetForegroundWindow(handle);
             return handle;
